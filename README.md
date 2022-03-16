@@ -1,5 +1,7 @@
 # correct horse passphrase generator
 
+[![Maintainability]][Maintainability-link]
+
 A random passphrase generator inspired by Randall Munroes [XKCD #936], [bbusschots/hsxkpasswd], and [matt-allan/battery-staple]. Thanks!
 
 ## Why??
@@ -78,3 +80,5 @@ docker run \
 [matt-allan/battery-staple]: https://github.com/matt-allan/battery-staple
 [bbusschots/hsxkpasswd]: https://github.com/bbusschots/hsxkpasswd
 [Crypt::HSXKPasswd::Dictionary::DE]: http://bbusschots.github.io/hsxkpasswd/Crypt-HSXKPasswd/pod.html#Crypt::HSXKPasswd::Dictionary::DE
+[Maintainability]: https://api.codeclimate.com/v1/badges/5133820084cbaa915129/maintainability
+[Maintainability-link]: https://codeclimate.com/github/gregor-j/correct-horse/maintainability
