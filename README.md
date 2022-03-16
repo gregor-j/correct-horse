@@ -1,6 +1,9 @@
 # correct horse passphrase generator
 
+[![License: MIT]](LICENSE)
 [![Maintainability]][Maintainability-link]
+[![Test Coverage]][Test Coverage Link]
+[![Packagist Version]][packagist]
 
 A random passphrase generator inspired by Randall Munroes [XKCD #936], [bbusschots/hsxkpasswd], and [matt-allan/battery-staple]. Thanks!
 
@@ -80,5 +83,10 @@ docker run \
 [matt-allan/battery-staple]: https://github.com/matt-allan/battery-staple
 [bbusschots/hsxkpasswd]: https://github.com/bbusschots/hsxkpasswd
 [Crypt::HSXKPasswd::Dictionary::DE]: http://bbusschots.github.io/hsxkpasswd/Crypt-HSXKPasswd/pod.html#Crypt::HSXKPasswd::Dictionary::DE
+[License: MIT]: https://img.shields.io/badge/license-MIT-blue.svg
 [Maintainability]: https://api.codeclimate.com/v1/badges/5133820084cbaa915129/maintainability
 [Maintainability-link]: https://codeclimate.com/github/gregor-j/correct-horse/maintainability
+[Test Coverage]: https://api.codeclimate.com/v1/badges/5133820084cbaa915129/test_coverage
+[Test Coverage Link]: https://codeclimate.com/github/gregor-j/correct-horse/test_coverage
+[Packagist Version]: https://img.shields.io/packagist/v/gregorj/correct-horse
+[packagist]: https://packagist.org/packages/gregorj/correct-horse
