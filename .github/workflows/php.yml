@@ -9,7 +9,10 @@ on:
 jobs:
   phpunit:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ '7.2', '7.4', '8.0', '8.1' ]
 
     env:
       CC_TEST_REPORTER_ID: d97623f98d0ee6b865c4432d52f50f8bb7f0774f4c06fdfa5dfa347e61abdb91
@@ -17,10 +20,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Setup PHP
+    - name: Setup PHP ${{ matrix.php-version }}
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.2'
+        php-version: ${{ matrix.php-version }}
         coverage: xdebug
 
     - name: Validate composer.json and composer.lock
