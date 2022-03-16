@@ -1,0 +1,23 @@
+{
+    "name": "gregorj/correct-horse",
+    "description": "A random passphrase generator inspired by Randall Munroes XKCD #936",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "GregorJ\\CorrectHorse\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\GregorJ\\CorrectHorse\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5"
+    }
+}
