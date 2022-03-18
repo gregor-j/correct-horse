@@ -4,6 +4,8 @@ namespace GregorJ\CorrectHorse\Generators;
 
 use GregorJ\CorrectHorse\RandomGeneratorInterface;
 
+use function strtoupper;
+
 /**
  * Class RandomUpperCaseWord
  */
