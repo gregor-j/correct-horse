@@ -7,7 +7,7 @@ use GregorJ\CorrectHorse\RandomGeneratorInterface;
 /**
  * Class RandomLowerCaseWord
  */
-class RandomLowerCaseWord implements RandomGeneratorInterface
+final class RandomLowerCaseWord implements RandomGeneratorInterface
 {
     use ManageRandomItemsTrait;
     use DictionaryWordTrait;
