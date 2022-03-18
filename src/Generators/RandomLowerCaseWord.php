@@ -2,15 +2,12 @@
 
 namespace GregorJ\CorrectHorse\Generators;
 
-use GregorJ\CorrectHorse\DictionaryInterface;
 use GregorJ\CorrectHorse\RandomGeneratorInterface;
 
-use function in_array;
-
 /**
- * Class RandomWord
+ * Class RandomLowerCaseWord
  */
-final class RandomWord implements RandomGeneratorInterface
+class RandomLowerCaseWord implements RandomGeneratorInterface
 {
     use ManageRandomItemsTrait;
     use DictionaryWordTrait;
@@ -20,6 +17,6 @@ final class RandomWord implements RandomGeneratorInterface
      */
     private function getRandomWord(): string
     {
-        return $this->dictionary->getRandomWord();
+        return strtolower($this->dictionary->getRandomWord());
     }
 }
