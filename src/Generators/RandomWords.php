@@ -29,7 +29,7 @@ final class RandomWords implements RandomGeneratorInterface
      * @param  RandomWord  $lowerCase
      * @param  RandomWord  $upperCase
      */
-    public function __construct(RandomWord $lowerCase, RandomWord $upperCase)
+    public function __construct(RandomGeneratorInterface $lowerCase, RandomGeneratorInterface $upperCase)
     {
         $this->upperCase = $upperCase;
         $this->lowerCase = $lowerCase;
