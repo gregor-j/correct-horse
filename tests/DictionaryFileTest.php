@@ -41,6 +41,7 @@ class DictionaryFileTest extends TestCase
      * @return void
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
+     * @throws \Exception
      */
     public function testGetRandomWord(): void
     {

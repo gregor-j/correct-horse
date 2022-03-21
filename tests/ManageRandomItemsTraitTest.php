@@ -17,6 +17,7 @@ class ManageRandomItemsTraitTest extends TestCase
      * @return void
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
+     * @throws \Exception
      */
     public function testHas(): void
     {
@@ -30,6 +31,7 @@ class ManageRandomItemsTraitTest extends TestCase
      * @return void
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
+     * @throws \Exception
      */
     public function testReset(): void
     {
@@ -45,6 +47,7 @@ class ManageRandomItemsTraitTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws Exception
+     * @throws \Exception
      */
     public function testRemove(): void
     {

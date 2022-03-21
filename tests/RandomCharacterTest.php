@@ -2,6 +2,7 @@
 
 namespace Tests\GregorJ\CorrectHorse;
 
+use Exception;
 use GregorJ\CorrectHorse\Generators\RandomCharacter;
 use PHPUnit\Framework\TestCase;
 
@@ -60,6 +61,7 @@ class RandomCharacterTest extends TestCase
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testGenerate(): void
     {
@@ -73,6 +75,7 @@ class RandomCharacterTest extends TestCase
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testGenerateFromSingleCharacter(): void
     {

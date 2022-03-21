@@ -21,6 +21,7 @@ class RandomWordsTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws \Exception
      */
     public function testEmptyWords(): void
     {
@@ -37,6 +38,7 @@ class RandomWordsTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws \Exception
      */
     public function testReset(): void
     {
@@ -64,6 +66,7 @@ class RandomWordsTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws \Exception
      */
     public function testRemoveLowerCase(): void
     {
@@ -91,6 +94,7 @@ class RandomWordsTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws \Exception
      */
     public function testRemoveUpperCase(): void
     {
@@ -118,6 +122,7 @@ class RandomWordsTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws \Exception
      */
     public function testRemove(): void
     {
@@ -155,6 +160,7 @@ class RandomWordsTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws \Exception
      */
     public function testGetWithoutLowerCase(): void
     {
@@ -183,6 +189,7 @@ class RandomWordsTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws \Exception
      */
     public function testGetWithoutUpperCase(): void
     {
@@ -211,6 +218,7 @@ class RandomWordsTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws \Exception
      */
     public function testAdd(): void
     {

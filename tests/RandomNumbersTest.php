@@ -31,6 +31,7 @@ class RandomNumbersTest extends TestCase
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
+     * @throws \Exception
      */
     public function testSetMinAndMax(): void
     {
@@ -49,6 +50,7 @@ class RandomNumbersTest extends TestCase
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
+     * @throws \Exception
      */
     public function testSetFlippedMinAndMax(): void
     {
@@ -67,6 +69,7 @@ class RandomNumbersTest extends TestCase
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
+     * @throws \Exception
      */
     public function testSetMinSameAsMax(): void
     {
@@ -85,6 +88,7 @@ class RandomNumbersTest extends TestCase
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
+     * @throws \Exception
      */
     public function testSetMinBelowZero(): void
     {
@@ -103,6 +107,7 @@ class RandomNumbersTest extends TestCase
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
+     * @throws \Exception
      */
     public function testReachingMax(): void
     {
