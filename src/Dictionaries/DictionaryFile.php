@@ -2,13 +2,15 @@
 
 namespace GregorJ\CorrectHorse\Dictionaries;
 
+use Exception;
 use GregorJ\CorrectHorse\DictionaryInterface;
 use RuntimeException;
 
-use function array_rand;
+use function count;
 use function dirname;
 use function file;
 use function file_exists;
+use function random_int;
 use function trim;
 
 /**
@@ -46,14 +48,15 @@ final class DictionaryFile implements DictionaryInterface
     /**
      * Get a random word from the dictionary.
      * @return string
+     * @throws Exception
      */
     public function getRandomWord(): string
     {
         $lines = file($this->filename);
-        $line = '';
-        while ($line === '') {
-            $line = trim($lines[array_rand($lines)]);
-        }
+        $max = count($lines) - 1;
+        do {
+            $line = trim($lines[random_int(0, $max)]);
+        } while ($line === '');
         return $line;
     }
 }

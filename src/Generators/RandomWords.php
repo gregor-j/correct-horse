@@ -2,10 +2,11 @@
 
 namespace GregorJ\CorrectHorse\Generators;
 
+use Exception;
 use GregorJ\CorrectHorse\RandomGeneratorInterface;
 
 use function array_merge;
-use function rand;
+use function random_int;
 use function shuffle;
 
 /**
@@ -38,10 +39,11 @@ final class RandomWords implements RandomGeneratorInterface
     /**
      * Add a randomly generated item.
      * @return void
+     * @throws Exception
      */
     public function add(): void
     {
-        if (rand(0, 1) === 0) {
+        if (random_int(0, 1) === 0) {
             $this->lowerCase->add();
         } else {
             $this->upperCase->add();
@@ -61,6 +63,7 @@ final class RandomWords implements RandomGeneratorInterface
     /**
      * Remove a random generated item.
      * @return void
+     * @throws Exception
      */
     public function remove(): void
     {
@@ -69,7 +72,7 @@ final class RandomWords implements RandomGeneratorInterface
         } elseif (!$this->lowerCase->has() && $this->upperCase->has()) {
             $this->upperCase->remove();
         } elseif ($this->upperCase->has() && $this->lowerCase->has()) {
-            if (rand(0, 1) === 0) {
+            if (random_int(0, 1) === 0) {
                 $this->lowerCase->remove();
             } else {
                 $this->upperCase->remove();
@@ -89,6 +92,7 @@ final class RandomWords implements RandomGeneratorInterface
     /**
      * Get all randomly generated items in random order.
      * @return array
+     * @throws Exception
      */
     public function get(): array
     {

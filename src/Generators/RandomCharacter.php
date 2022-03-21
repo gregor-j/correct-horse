@@ -2,11 +2,14 @@
 
 namespace GregorJ\CorrectHorse\Generators;
 
+use Exception;
 use GregorJ\CorrectHorse\RandomGeneratorInterface;
 
 use function array_diff;
-use function array_rand;
+use function array_values;
+use function count;
 use function in_array;
+use function random_int;
 use function substr;
 
 /**
@@ -67,13 +70,15 @@ final class RandomCharacter implements RandomGeneratorInterface
     /**
      * Add a randomly generated item.
      * @return void
+     * @throws Exception
      */
     public function add(): void
     {
-        $chars = array_diff($this->chars, $this->items);
+        $chars = array_values(array_diff($this->chars, $this->items));
         if ($chars === []) {
             return;
         }
-        $this->items[] = $chars[array_rand($chars)];
+        $max = count($chars) - 1;
+        $this->items[] = $chars[random_int(0, $max)];
     }
 }

@@ -2,11 +2,12 @@
 
 namespace GregorJ\CorrectHorse\Generators;
 
+use Exception;
 use GregorJ\CorrectHorse\RandomGeneratorInterface;
 
 use function count;
 use function in_array;
-use function rand;
+use function random_int;
 
 /**
  * Class RandomNumbers
@@ -81,6 +82,7 @@ final class RandomNumbers implements RandomGeneratorInterface
     /**
      * Add a randomly generated item.
      * @return void
+     * @throws Exception
      */
     public function add(): void
     {
@@ -88,7 +90,7 @@ final class RandomNumbers implements RandomGeneratorInterface
             return;
         }
         do {
-            $number = rand($this->min, $this->max);
+            $number = random_int($this->min, $this->max);
         } while ($this->hasNumber($number));
         $this->items[] = $number;
     }

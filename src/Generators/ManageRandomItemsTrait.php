@@ -2,7 +2,11 @@
 
 namespace GregorJ\CorrectHorse\Generators;
 
-use function array_rand;
+use Exception;
+
+use function array_values;
+use function count;
+use function random_int;
 use function shuffle;
 
 /**
@@ -28,11 +32,14 @@ trait ManageRandomItemsTrait
     /**
      * Remove a random generated item.
      * @return void
+     * @throws Exception
      */
     public function remove(): void
     {
         if ($this->has()) {
-            unset($this->items[array_rand($this->items)]);
+            $max = count($this->items) - 1;
+            unset($this->items[random_int(0, $max)]);
+            $this->items = array_values($this->items);
         }
     }
 
