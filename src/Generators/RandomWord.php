@@ -2,10 +2,7 @@
 
 namespace GregorJ\CorrectHorse\Generators;
 
-use GregorJ\CorrectHorse\DictionaryInterface;
 use GregorJ\CorrectHorse\RandomGeneratorInterface;
-
-use function in_array;
 
 /**
  * Class RandomWord
