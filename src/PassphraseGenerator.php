@@ -32,7 +32,7 @@ final class PassphraseGenerator
      * Initialize the passphrase generator with a separator.
      * @param  RandomGeneratorInterface|null  $separator
      */
-    public function __construct(RandomGeneratorInterface $separator = null)
+    public function __construct(?RandomGeneratorInterface $separator = null)
     {
         if ($separator !== null) {
             $this->setSeparator($separator);
