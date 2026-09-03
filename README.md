@@ -1,11 +1,12 @@
 # correct horse passphrase generator
 
 [![License: MIT]](LICENSE)
-[![Maintainability]][Maintainability-link]
-[![Test Coverage]][Test Coverage Link]
 [![Packagist Version]][packagist]
+[![CI-svg]][CI-pipeline]
 
 A random passphrase generator inspired by Randall Munroes [XKCD #936], [bbusschots/hsxkpasswd], and [matt-allan/battery-staple]. Thanks!
+
+Requires PHP 7.2 or newer. The CI pipeline tests PHP 7.2, 7.4, and 8.0 through 8.4.
 
 ## Why??
 
@@ -65,28 +66,28 @@ echo $passphrase->generate().PHP_EOL;
 //9 korrekt Pferd Batterie Heftklammer 36
 ```
 
-## Testing
+## Development
 
-There are unit tests for every class.
+All development commands (install, test, lint, beautify, sniff, audit,
+validate) run via Docker through the `Makefile`, so no local PHP installation is
+needed. Run `make help` to list all targets. Most targets require `PHP_VERSION`,
+e.g.:
 
-```shell
-docker run \
-    --init \
-    --rm \
-    --volume $(pwd):/app \
-    --workdir /app \
-    php:7.2 vendor/bin/phpunit
+```sh
+make install PHP_VERSION=7.2
 ```
 
-[XKCD #936 image]: http://imgs.xkcd.com/comics/password_strength.png
+Individual targets are available for `make install`, `make validate`, `make audit`,
+`make lint`, `make sniff`, `make beautify`, and `make test`. To verify the lowest
+allowed dependency versions, run `make lowest`.
+
+[XKCD #936 image]: https://imgs.xkcd.com/comics/password_strength.png
 [XKCD #936]: https://xkcd.com/936/
 [matt-allan/battery-staple]: https://github.com/matt-allan/battery-staple
 [bbusschots/hsxkpasswd]: https://github.com/bbusschots/hsxkpasswd
-[Crypt::HSXKPasswd::Dictionary::DE]: http://bbusschots.github.io/hsxkpasswd/Crypt-HSXKPasswd/pod.html#Crypt::HSXKPasswd::Dictionary::DE
+[Crypt::HSXKPasswd::Dictionary::DE]: https://bbusschots.github.io/hsxkpasswd/Crypt-HSXKPasswd/pod.html#Crypt::HSXKPasswd::Dictionary::DE
 [License: MIT]: https://img.shields.io/badge/license-MIT-blue.svg
-[Maintainability]: https://api.codeclimate.com/v1/badges/5133820084cbaa915129/maintainability
-[Maintainability-link]: https://codeclimate.com/github/gregor-j/correct-horse/maintainability
-[Test Coverage]: https://api.codeclimate.com/v1/badges/5133820084cbaa915129/test_coverage
-[Test Coverage Link]: https://codeclimate.com/github/gregor-j/correct-horse/test_coverage
 [Packagist Version]: https://img.shields.io/packagist/v/gregorj/correct-horse
 [packagist]: https://packagist.org/packages/gregorj/correct-horse
+[CI-svg]: https://github.com/gregor-j/correct-horse/actions/workflows/php.yml/badge.svg
+[CI-pipeline]: https://github.com/gregor-j/correct-horse/actions/workflows/php.yml
