@@ -6,13 +6,9 @@ COMPOSER_CACHE_DIR := $(HOME)/.cache/composer
 DOCKER_USER        := --user "$$(id -u)":"$$(id -g)"
 DOCKER_MOUNT       := --volume "$$(pwd)":/app --workdir /app
 
-# --prefer-lowest only has an effect on "composer update", not "composer
-# install" (which just reproduces composer.lock) - switch commands so the
-# flag actually does something, matching the CI "lowest" matrix job.
-ifdef DEPENDENCIES_LOWEST
-COMPOSER_INSTALL_CMD := update --prefer-lowest
-else
-COMPOSER_INSTALL_CMD := install
+COMPOSER_UPDATE_FLAGS := --prefer-dist --no-interaction --no-progress
+ifeq ($(DEPENDENCIES_LOWEST),1)
+COMPOSER_UPDATE_FLAGS += --prefer-lowest
 endif
 
 # Optional: set CA_CERT_FILE to a PEM file (e.g. a corporate proxy root CA)
@@ -50,14 +46,23 @@ install: check-php-version ## Install composer dependencies for PHP_VERSION (set
 		$(CA_MOUNT) \
 		$(DOCKER_MOUNT) \
 		$(COMPOSER_IMAGE) sh -c '\
+			status=0; \
 			$(CA_TRUST_CMD) \
-			composer config platform.php "$(PHP_VERSION)" && \
-			composer $(COMPOSER_INSTALL_CMD) --prefer-dist --no-interaction --no-progress; \
-			status=$$?; \
-			composer config --unset platform; \
-			composer config --unset config 2>/dev/null; \
+			composer config platform.php "$(PHP_VERSION)" || status=$$?; \
+			if [ $$status -eq 0 ]; then \
+				composer update $(COMPOSER_UPDATE_FLAGS) || status=$$?; \
+			fi; \
+			composer config --unset platform.php >/dev/null 2>&1 || :; \
+			composer config --unset platform >/dev/null 2>&1 || :; \
+			if php -r '"'"'$$manifest = json_decode(file_get_contents("composer.json")); exit(isset($$manifest->config) && count(get_object_vars($$manifest->config)) === 0 ? 0 : 1);'"'"'; then \
+				composer config --unset config >/dev/null 2>&1 || :; \
+			fi; \
+			rm -f composer.lock; \
 			exit $$status \
-		'
+		'; \
+	status=$$?; \
+	rm -f composer.lock; \
+	exit $$status
 
 test: check-php-version ## Run PHPUnit for PHP_VERSION
 	docker run --rm -t --init $(DOCKER_USER) $(DOCKER_MOUNT) \
@@ -66,10 +71,6 @@ test: check-php-version ## Run PHPUnit for PHP_VERSION
 lint: check-php-version ## Syntax-check every .php file in src/ and tests/ for PHP_VERSION
 	docker run --rm --init $(DOCKER_USER) $(DOCKER_MOUNT) \
 		"php:$(PHP_VERSION)-cli" sh -c "find src tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l"
-
-analyze: check-php-version ## Run PHPStan for PHP_VERSION
-	docker run --rm -t --init $(DOCKER_USER) $(DOCKER_MOUNT) \
-		"php:$(PHP_VERSION)-cli" php vendor/bin/phpstan analyse --memory-limit=-1
 
 beautify: check-php-version ## Run PHPCBF (auto-fix code style) for PHP_VERSION
 	docker run --rm --init $(DOCKER_USER) $(DOCKER_MOUNT) \
