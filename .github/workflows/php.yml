@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Validate composer configuration
-        run: composer validate --strict
+        run: make validate
 
   php:
     name: PHP ${{ matrix.php-version }} (${{ matrix.dependencies }})
@@ -28,23 +28,18 @@ jobs:
             dependencies: lowest
     steps:
       - uses: actions/checkout@v7
-      - name: Setup PHP ${{ matrix.php-version }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          coverage: none
       - name: Install Composer dependencies (default)
         if: matrix.dependencies == 'default'
-        run: composer install --prefer-dist --no-interaction --no-progress
+        run: make install PHP_VERSION=${{ matrix.php-version }}
       - name: Install Composer dependencies (lowest)
         if: matrix.dependencies == 'lowest'
-        run: composer update --prefer-lowest --prefer-dist --no-interaction --no-progress
+        run: make install PHP_VERSION=${{ matrix.php-version }} DEPENDENCIES_LOWEST=1
       - name: Audit Composer dependencies
-        if: matrix.php-version == '7.2'
-        run: composer audit
+        if: matrix.php-version == '7.2' && matrix.dependencies == 'default'
+        run: make audit
       - name: Check PHP syntax
-        run: find src tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+        run: make lint PHP_VERSION=${{ matrix.php-version }}
       - name: Run PHPCS
-        run: php vendor/bin/phpcs
+        run: make sniff PHP_VERSION=${{ matrix.php-version }}
       - name: Run PHPUnit
-        run: php vendor/bin/phpunit
+        run: make test PHP_VERSION=${{ matrix.php-version }}
