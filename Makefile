@@ -1,91 +1,46 @@
 SHELL := /bin/sh
 .DEFAULT_GOAL := help
 
-COMPOSER_IMAGE     := composer:2
-COMPOSER_CACHE_DIR := $(HOME)/.cache/composer
-DOCKER_USER        := --user "$$(id -u)":"$$(id -g)"
-DOCKER_MOUNT       := --volume "$$(pwd)":/app --workdir /app
+PHP_VERSION ?= 8.1
+DEPENDENCIES_LOWEST ?= 0
+COMPOSER_IMAGE ?= composer:2
+COMPOSER_CACHE_DIR ?= $(HOME)/.cache/composer
+export PHP_VERSION DEPENDENCIES_LOWEST COMPOSER_IMAGE COMPOSER_CACHE_DIR CA_CERT_FILE
 
-COMPOSER_UPDATE_FLAGS := --prefer-dist --no-interaction --no-progress
-ifeq ($(DEPENDENCIES_LOWEST),1)
-COMPOSER_UPDATE_FLAGS += --prefer-lowest
-endif
+DOCKER_RUN = docker run --rm --init --user "$$(id -u):$$(id -g)" --volume "$(CURDIR):/app" --workdir /app --env PHP_VERSION="$(PHP_VERSION)" "php:$(PHP_VERSION)-cli"
 
-# Optional: set CA_CERT_FILE to a PEM file (e.g. a corporate proxy root CA)
-# to make it trusted for HTTPS network access inside the containers used by
-# "install" and "audit".
-ifdef CA_CERT_FILE
-CA_MOUNT     := --volume "$(CA_CERT_FILE)":/tmp/extra-ca.crt:ro
-CA_TRUST_CMD := cat /etc/ssl/certs/ca-certificates.crt /tmp/extra-ca.crt > /tmp/ca-bundle.pem && export CURL_CA_BUNDLE=/tmp/ca-bundle.pem SSL_CERT_FILE=/tmp/ca-bundle.pem &&
-else
-CA_MOUNT     :=
-CA_TRUST_CMD :=
-endif
+.PHONY: help clean check-php-version install check lint test sniff beautify audit validate
 
-.PHONY: help clean check-php-version install test lint beautify sniff audit validate
-
-help: ## Show this help
+help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | sort | \
-		awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
+		awk 'BEGIN {FS = ":.*## "}; {printf "  %-18s %s\n", $$1, $$2}'
 
-clean: ## Remove vendor/ composer.lock and phpunit cache (reset to a fresh checkout)
-	rm -rf vendor composer.lock .phpunit.result.cache
+clean: ## Remove vendor/ and PHPUnit cache, preserving user lockfiles
+	flock -x composer.json rm -rf vendor .phpunit.result.cache
 
-check-php-version:
-	@if [ -z "$(PHP_VERSION)" ]; then \
-		echo "Error: PHP_VERSION must be set, e.g. 'make $(MAKECMDGOALS) PHP_VERSION=8.1'." >&2; \
-		exit 1; \
-	fi
+check-php-version: ## Show and verify the requested PHP runtime
+	@$(DOCKER_RUN) php -r 'printf("PHP %s\n", PHP_VERSION); if (!in_array(getenv("PHP_VERSION"), [PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION, PHP_VERSION], true)) { exit(1); }'
 
-install: check-php-version ## Install composer dependencies for PHP_VERSION (set DEPENDENCIES_LOWEST=1 for --prefer-lowest)
-	@mkdir -p "$(COMPOSER_CACHE_DIR)"
-	docker run --rm -t --init $(DOCKER_USER) \
-		--env HTTP_PROXY --env HTTPS_PROXY --env NO_PROXY \
-		--env COMPOSER_CACHE_DIR=/tmp/composer-cache \
-		--volume "$(COMPOSER_CACHE_DIR)":/tmp/composer-cache \
-		$(CA_MOUNT) \
-		$(DOCKER_MOUNT) \
-		$(COMPOSER_IMAGE) sh -c '\
-			status=0; \
-			$(CA_TRUST_CMD) \
-			composer config platform.php "$(PHP_VERSION)" || status=$$?; \
-			if [ $$status -eq 0 ]; then \
-				composer update $(COMPOSER_UPDATE_FLAGS) || status=$$?; \
-			fi; \
-			composer config --unset platform.php >/dev/null 2>&1 || :; \
-			composer config --unset platform >/dev/null 2>&1 || :; \
-			if php -r '"'"'$$manifest = json_decode(file_get_contents("composer.json")); exit(isset($$manifest->config) && count(get_object_vars($$manifest->config)) === 0 ? 0 : 1);'"'"'; then \
-				composer config --unset config >/dev/null 2>&1 || :; \
-			fi; \
-			rm -f composer.lock; \
-			exit $$status \
-		'; \
-	status=$$?; \
-	rm -f composer.lock; \
-	exit $$status
+install: ## Resolve dependencies for PHP_VERSION; use DEPENDENCIES_LOWEST=1 for lowest
+	@sh scripts/composer-run.sh install
 
-test: check-php-version ## Run PHPUnit for PHP_VERSION
-	docker run --rm -t --init $(DOCKER_USER) $(DOCKER_MOUNT) \
-		"php:$(PHP_VERSION)-cli" php vendor/bin/phpunit
+check: ## Install, run all QA, and audit the same dependency snapshot
+	@sh scripts/composer-run.sh check
 
-lint: check-php-version ## Syntax-check every .php file in src/ and tests/ for PHP_VERSION
-	docker run --rm --init $(DOCKER_USER) $(DOCKER_MOUNT) \
-		"php:$(PHP_VERSION)-cli" sh -c "find src tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l"
+lint: ## Syntax-check source and tests
+	@$(DOCKER_RUN) sh -c 'find src tests -type f -name "*.php" -print0 | xargs -0 -n1 php -l'
 
-beautify: check-php-version ## Run PHPCBF (auto-fix code style) for PHP_VERSION
-	docker run --rm --init $(DOCKER_USER) $(DOCKER_MOUNT) \
-		"php:$(PHP_VERSION)-cli" php vendor/bin/phpcbf
+test: ## Run PHPUnit
+	@$(DOCKER_RUN) php vendor/bin/phpunit
 
-sniff: check-php-version ## Run PHPCS (code style check) for PHP_VERSION
-	docker run --rm --init $(DOCKER_USER) $(DOCKER_MOUNT) \
-		"php:$(PHP_VERSION)-cli" php vendor/bin/phpcs
+sniff: ## Check coding style
+	@$(DOCKER_RUN) php vendor/bin/phpcs
 
-audit: ## Run composer audit (checks dependencies for known vulnerabilities)
-	docker run --rm -t --init $(DOCKER_USER) \
-		--env HTTP_PROXY --env HTTPS_PROXY --env NO_PROXY \
-		$(CA_MOUNT) $(DOCKER_MOUNT) \
-		$(COMPOSER_IMAGE) sh -c '$(CA_TRUST_CMD) composer audit'
+beautify: ## Fix coding style
+	@$(DOCKER_RUN) php vendor/bin/phpcbf
 
-validate: ## Run composer validate --strict
-	docker run --rm -t $(DOCKER_USER) $(DOCKER_MOUNT) \
-		$(COMPOSER_IMAGE) composer validate --strict
+audit: ## Audit installed dependencies, independently of previous runs
+	@sh scripts/composer-run.sh audit
+
+validate: ## Validate Composer metadata
+	@sh scripts/composer-run.sh validate

@@ -20,11 +20,11 @@
 
 ## Development workflow
 - Autoloading is PSR-4 from `composer.json`: `GregorJ\CorrectHorse\` → `src/`, tests use `Tests\GregorJ\CorrectHorse\` → `tests/`.
-- PHP 7.2 or newer is required; CI covers PHP 7.2, 7.4, and 8.0 through 8.4.
-- Run development commands through the Docker-backed `Makefile`, for example `make install PHP_VERSION=8.4` followed by `make test PHP_VERSION=8.4`; this avoids requiring a local PHP installation.
+- PHP `^8.1` is required. CI tests PHP 8.1 and 8.5 with normal and lowest dependencies, and retains PHP 8.2–8.4 checks during the transition.
+- Run all QA and audit one resolved snapshot with `make check PHP_VERSION=8.1` or `make check PHP_VERSION=8.5 DEPENDENCIES_LOWEST=1`.
 - Available QA targets include `make lint`, `make sniff`, `make beautify`, `make audit`, and `make validate`, each accepting `PHP_VERSION` where required. `make beautify` runs PHPCBF before `make sniff` checks the PSR-12 rules in `phpcs.xml`.
-- To test the lowest allowed dependency versions, run `make install PHP_VERSION=7.2 DEPENDENCIES_LOWEST=1` before the tests.
-- The PHPUnit config in `phpunit.xml` boots `vendor/autoload.php`, runs `tests/*Test.php`, and measures coverage from `src/`.
+- See README for the PHP matrix, locking, proxy and CA configuration.
+- The PHPUnit config in `phpunit.xml` boots `vendor/autoload.php`, runs `tests/*Test.php`, and configures `src/` as the coverage source.
 
 ## Codebase conventions
 - Keep new production classes `final` unless the repo already uses another pattern.
@@ -38,4 +38,3 @@
 - `src/Generators/RandomNumbers.php` and `src/Generators/RandomCharacter.php` — random item generation patterns.
 - `tests/PassphraseGeneratorTest.php` — expected generator/separator call order.
 - `tests/RandomWordTest.php` — duplicate-word behavior and dictionary mocking.
-

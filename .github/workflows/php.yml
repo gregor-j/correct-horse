@@ -1,45 +1,52 @@
-name: PHP CI
+name: "CI pipeline"
 
 on:
-  push:
   pull_request:
-  # Allows you to run this workflow manually from the Actions tab
+    branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: "read"
+
+concurrency:
+  group: "ci-${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
+
   composer:
-    name: Composer config validation
-    runs-on: ubuntu-latest
+    name: "Composer config validation"
+    runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/checkout@v7
-      - name: Validate composer configuration
-        run: make validate
+      - uses: "actions/checkout@v7"
+      - name: "Validate composer.json"
+        run: "composer validate --strict"
 
   php:
-    name: PHP ${{ matrix.php-version }} (${{ matrix.dependencies }})
-    runs-on: ubuntu-latest
+    name: "PHP ${{ matrix.php-version }} (${{ matrix.dependencies }})"
+    runs-on: "ubuntu-latest"
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.2', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4' ]
-        dependencies: [ default ]
+        php-version:
+          - "8.1"
+          - "8.2"
+          - "8.3"
+          - "8.4"
+          - "8.5"
+        dependencies:
+          - "default"
         include:
-          - php-version: '7.2'
-            dependencies: lowest
+          - php-version: "8.1"
+            dependencies: "lowest"
+          - php-version: "8.5"
+            dependencies: "lowest"
     steps:
-      - uses: actions/checkout@v7
-      - name: Install Composer dependencies (default)
-        if: matrix.dependencies == 'default'
-        run: make install PHP_VERSION=${{ matrix.php-version }}
-      - name: Install Composer dependencies (lowest)
-        if: matrix.dependencies == 'lowest'
-        run: make install PHP_VERSION=${{ matrix.php-version }} DEPENDENCIES_LOWEST=1
-      - name: Audit Composer dependencies
-        if: matrix.php-version == '7.2' && matrix.dependencies == 'default'
-        run: make audit
-      - name: Check PHP syntax
-        run: make lint PHP_VERSION=${{ matrix.php-version }}
-      - name: Run PHPCS
-        run: make sniff PHP_VERSION=${{ matrix.php-version }}
-      - name: Run PHPUnit
-        run: make test PHP_VERSION=${{ matrix.php-version }}
+      - name: "git checkout"
+        uses: "actions/checkout@v7"
+        with:
+          persist-credentials: false
+      - name: "Install, check and audit the same dependency snapshot"
+        env:
+          LOWEST: "${{ matrix.dependencies == 'lowest' && '1' || '0' }}"
+        run: "make check PHP_VERSION=${{ matrix.php-version }} DEPENDENCIES_LOWEST=$LOWEST"
